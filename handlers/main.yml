@@ -1,0 +1,18 @@
+#******************************************************#
+#* Copyright 2019-20, MapleLabs, All Rights Reserved. *#
+#*                                                    *# 
+#******************************************************#
+---
+- name: Restart fluent bit
+  become: true
+  systemd:
+    daemon_reload: true
+    name: td-agent-bit
+    state: restarted
+
+- name: Restart sfagent
+  become: true
+  systemd:
+    daemon_reload: true
+    name: sfagent
+    state: restarted

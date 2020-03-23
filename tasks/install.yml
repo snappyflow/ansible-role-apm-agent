@@ -1,0 +1,29 @@
+#******************************************************#
+#* Copyright 2019-20, MapleLabs, All Rights Reserved. *#
+#*                                                    *# 
+#******************************************************#
+---
+- name: Change file permissions
+  become: true
+  file:
+    path: /tmp/install.sh
+    mode: '0777'
+
+- name: Execute install.sh
+  become: true
+  command: /tmp/install.sh
+
+- name: config | Configuring sfagent
+  become: true
+  template:
+    src: etc/config.yaml.j2
+    dest: "/opt/sfagent/config.yaml"
+    mode: 0644
+  
+- name: start sfagent
+  become: true
+  service:
+    name: sfagent
+    state: started
+    enabled: yes
+

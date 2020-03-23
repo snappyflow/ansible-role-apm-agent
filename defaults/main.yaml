@@ -1,0 +1,171 @@
+#******************************************************#
+#* Copyright 2019-20, MapleLabs, All Rights Reserved. *#
+#*                                                    *# 
+#******************************************************#
+---
+sfagent_configuration:
+  # Sample config
+  agent:
+    ## log path OPTIONAL, defualt is /var/log/sfagent/sfagent.log
+    # logpath: /var/log/sfagent/sfagent.log
+
+    ## log level OPTIONAL, default is info
+    # loglevel: info
+
+    ## Port to run sfagent api server, default is 8585
+    # port: 8585
+
+    ## target name for heartbeat documents
+    target: heartbeat
+
+    ## heartbeat interval, default is 300 seconds
+    # interval: 300
+
+  ## Tags to be added to every document
+  ## REQUIRED tags:
+  ## Name: name of the server
+  ## appName: application name
+  ## projectName: projectName
+  tags:
+    Name: "{{ agent['Name'] }}"
+    appName: "{{ agent['appName'] }}"
+    projectName: "{{ agent['projectName'] }}"
+
+  # Metric plugin config
+  metrics:
+    ## Target name for metric plugin to send documents. This is temporary, it will be removed in next release
+    target: metrics
+
+    ## list of plugins
+    plugins:
+    ## Linux plugin config, The linux plugin collects hardware statistics and configuration of Linux OS.
+    ## Sample config:
+    - name: linux
+      group_name: linux
+      enabled: true
+      interval: 300
+
+    ## Netstat plugin config
+    ## Netstat plugin monitors network connections, both incoming and outgoing.
+    ## The plugin collects the network connection information from the netstat command line tool.
+    ## This plugin requires the netstat command, which is included in the 'net-tools' package.
+    ## If this package is not present, use the following commands to install it.
+    ## To install net-tools package in CentOS/RHEL:
+    ## sudo yum install net-tools
+    ## To install net-tools package in Ubuntu OS:
+    ## sudo apt-get install net-tools
+
+    - name: netstat
+      group_name: linux
+      enabled: true
+      interval: 300
+
+    ## psutil plugin
+    ## Psutil Plugin will collect all the process details(pid,user,%cpu,etc.) currently running on machine
+    ## config details
+    ## numprocess: To get top n number of process, if numprocess is empty it will collect all currently running process.
+    ## sortby: To sort the running process.
+    ## uname    : Username
+    ## pid      : ProcessId
+    ## psr      : Processor
+    ## pcpu     : CPUPercent
+    ## cputime  : CPUTime
+    ## pmem     : Memory Percent
+    ## rsz      : Resident Memory
+    ## vsz      : Virtual Memory
+    ## etime    : Elapsed Time
+    ## s        : State code
+
+    - name: psutil
+      group_name: linux
+      enabled: true
+      interval: 60
+      config:
+        numprocess: 10
+        sortby: pcpu
+
+    ## lsof plugin:
+    ## LSOF (list of open files) plugin fetch open files in linux system.
+    ## It returns the lists of top processes with maximum files opened and list of respective opened files.
+    ## Lsof needs to be installed before running this plugin.
+    ## To install lsof in Centos / RHEL
+    ## sudo yum install lsof
+    ## To install lsof in Ubuntu OS:
+    ##sudo apt-get install lsof
+    ## config details:
+    ## numProcess: No. of top N process with maximum no. of files opened. Default value is 15.
+
+    - name: lsof
+      group_name: linux
+      enabled: true
+      interval: 60
+      config:
+        numProcess: 15
+
+
+    ## Elastic Search Plugin
+    ## Elastic search plugin queries elastic search for statistics.
+    ## It collects node, index and cluster stats
+    - name: elasticsearch
+      group_name: elasticsearch
+      enabled: true
+      interval: 300
+      config:
+        documentsTypes:
+        - clusterStats
+        - nodeStats
+        - indexStats
+        es_password: elastic
+        es_protocol: http
+        es_username: elastic
+        port: 9200
+
+  logging:
+    ## Target name for metric plugin to send documents. This is temporary, it will be removed in next release
+    target: logger
+
+    ## Logging plugins
+    plugins:
+
+    ## Linux-syslog to collect syslog
+    ## config details:
+    ## log_level: list of log levels to filter. OPTIONAL with default as error
+    ## log_path: comma separated list of log file path. OPTIONAL with default as
+    ##           /var/log/syslog,/var/log/auth.log,/var/log/messages,/var/log/secure
+    - name: linux-syslog
+      group_name: linux
+      enabled: true
+      ## OPTIONAL
+      config:
+        log_level:
+          - error
+          - warning
+          - info
+        log_path: "/var/log/syslog,/var/log/auth.log,/var/log/messages,/var/log/secure"
+
+  ## List of targets with details.
+  targets:
+  - name: heartbeat
+    type: elasticsearch
+    store: heartbeat
+    config:
+      host: "{{ agent['es_host'] }}"
+      index: "{{ agent['heartbeat_index'] }}"
+      port: 9200
+      protocol: http
+  - name: metrics
+    type: elasticsearch
+    store: metrics
+    config:
+      host: "{{ agent['es_host'] }}"
+      index: "{{ agent['metrics_index'] }}"
+      port: 9200
+      protocol: http
+  - name: logger
+    type: elasticsearch
+    store: logs
+    config:
+      host: "{{ agent['es_host'] }}"
+      index: "{{ agent['logger_index'] }}"
+      port: 9200
+      protocol: http

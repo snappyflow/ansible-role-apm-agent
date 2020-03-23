@@ -1,0 +1,10 @@
+#******************************************************#
+#* Copyright 2019-20, MapleLabs, All Rights Reserved. *#
+#*                                                    *# 
+#******************************************************#
+---
+
+# Configure SnappyFlow Agents
+- include_tasks: pre-install.yml
+- include_tasks: install.yml
+- include_tasks: validate.yml

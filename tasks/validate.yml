@@ -1,0 +1,34 @@
+#******************************************************#
+#* Copyright 2019-20, MapleLabs, All Rights Reserved. *#
+#*                                                    *# 
+#******************************************************#
+---
+- name: Check if sfagent is running
+  command: systemctl status sfagent
+  ignore_errors: yes
+  changed_when: false
+  register: service_sfagent_status
+
+- name: Report status of sfagent
+  fail:
+    msg: |
+      Service sfagent is not running.
+      Output of `systemctl status sfagent`:
+      {{ service_sfagent_status.stdout }}
+      {{ service_sfagent_status.stderr }}
+  when: service_sfagent_status.failed
+
+#- name: check if td-agent-bit is running
+#  command: systemctl status td-agent-bit
+#  ignore_errors: yes
+#  changed_when: false
+#  register: service_td_agent_bit_status
+
+#- name: report status of td-agent-bit
+#  fail:
+#    msg: |
+#      service td-agent-bit is not running.
+#      output of `systemctl status td-agent-bit`:
+#      {{ service_td_agent_bit_status.stdout }}
+#      {{ service_td_agent_bit_status.stderr }}
+#  when: service_td_agent_bit_status.failed
