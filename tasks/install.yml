@@ -13,13 +13,6 @@
   become: true
   command: /tmp/install.sh
 
-- name: config | Configuring sfagent
-  become: true
-  template:
-    src: etc/config.yaml.j2
-    dest: "/opt/sfagent/config.yaml"
-    mode: 0644
-  
 - name: start sfagent
   become: true
   service:
