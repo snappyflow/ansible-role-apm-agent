@@ -1,0 +1,10 @@
+#Enter VM node host_name,host_ip & host_username to upgrade sfagent
+[nodes]
+
+###sample
+# <host_name> ansible_host=<host_ip> ansible_user=<host_username>
+
+
+ip-172-31-108-8.us-west-2.compute.internal ansible_host=34.220.112.129 ansible_user=centos
+ip-172-31-99-226.us-west-2.compute.internal ansible_host=35.160.124.61 ansible_user=admin
+
