@@ -1,0 +1,42 @@
+#******************************************************#
+#* Copyright 2019-20, MapleLabs, All Rights Reserved. *#
+#*                                                    *# 
+#******************************************************#
+---
+- name: Get OS family
+  shell: cat /etc/*-release | grep -iw id | cut -d"=" -f2
+  register: os_family_cmd
+
+- set_fact:
+    os_family: "{{ os_family_cmd.stdout | trim }}"
+
+- name: install packages on CentOS
+  become: yes
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - wget
+    - net-tools
+    - lsof
+    - sysstat
+  when: os_family == "centos"
+
+- name: install packages on Ubuntu
+  become: yes
+  apt:
+    pkg:
+    - wget
+    - net-tools
+    - lsof
+    - sysstat
+  when: os_family == "ubuntu"
+
+- name: download agent installer
+  become: true
+  get_url:
+    url: 'https://raw.github.com/snappyflow/apm-agent/master/install.sh'
+    dest: /tmp/install.sh
+    mode: 0777
+    force: yes
