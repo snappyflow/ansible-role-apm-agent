@@ -2,5 +2,5 @@
 - hosts: nodes
   
   roles:
-    - { role: ansible-role-apm-agent }
+    - { role: ansible-role-agent }
 
