@@ -1,0 +1,6 @@
+---
+- hosts: nodes
+  
+  roles:
+    - { role: ansible-role-apm-agent }
+
