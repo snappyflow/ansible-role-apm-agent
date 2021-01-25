@@ -1,6 +1,0 @@
----
-- hosts: nodes
-  
-  roles:
-    - { role: ansible-role-agent }
-
