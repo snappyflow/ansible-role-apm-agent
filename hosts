@@ -5,5 +5,5 @@
 # <host_name> ansible_host=<host_ip> ansible_user=<host_username>
 
 
-ip-172-31-10-247.us-west-2.compute.internal ansible_host=52.33.123.31 ansible_user=centos
+#ip-172-31-10-247.us-west-2.compute.internal ansible_host=52.33.123.31 ansible_user=centos
 
