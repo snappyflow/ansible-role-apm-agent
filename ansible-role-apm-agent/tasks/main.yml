@@ -21,13 +21,6 @@
   tags:
     - always
 
-- include_tasks:
-    file: validate.yml
-    apply:
-      tags:
-        - install
-  tags:
-    - always
 
 - include_tasks:
     file: upgrade.yml
@@ -36,3 +29,13 @@
         - upgrade
   tags:
     - always
+
+- include_tasks:
+    file: validate.yml
+    apply:
+      tags:
+        - install
+        - upgrade
+  tags:
+    - always
+
