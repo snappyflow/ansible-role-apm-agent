@@ -1,0 +1,8 @@
+---
+#this file has the preference over hosts file.
+#values will be searched here before the hosts file.
+#the parameters defined here can be commonly used for all insances in the hosts file.
+#sample values 
+#key: <key to be copied from profile key of the snappyflow >
+#appName: <the application name to be displayed in the snappyflow inventory page. use this in this file when you want all the instances to have the same application name.>
+#projectName: <the project name to be displayed in the snappyflow inventory page. use this in this file when you want all the instances to have the same project name.>
