@@ -1,6 +1,5 @@
 ---
-- hosts: nodes
-  
+- hosts: all
+  become: true
   roles:
-    - { role: ansible-role-apm-agent }
-
+    - { role: sfagent }

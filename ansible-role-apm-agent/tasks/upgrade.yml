@@ -1,9 +1,0 @@
-#******************************************************#
-#* Copyright 2019-20, MapleLabs, All Rights Reserved. *#
-#*                                                    *# 
-#******************************************************#
----
-
-- name: Upgrade agent
-  become: true
-  shell: curl -s https://raw.githubusercontent.com/snappyflow/apm-agent/master/install.sh | bash -s -- --upgrade
