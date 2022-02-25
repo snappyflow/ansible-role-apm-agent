@@ -1,5 +1,7 @@
 ---
 - include_vars: ../config-params.yml
+  ignore_errors: yes
+
 - name: generate config
   shell: ./sfagent -generate-config
   args:
@@ -35,7 +37,8 @@
     regexp: '{{item.search}}'
     replace: '{{ item.replace }}'
   with_items:
-    - { search: "key: CHANGEME" , replace: 'key: {{key}}' }
-    - { search: "appName: CHANGEME" , replace: 'appName: {{appName}}' }
-    - { search: "projectName: CHANGEME" , replace: 'projectName: {{projectName}}' }
-    - { search: "Name: CHANGEME" , replace: 'Name: {{Name}}' }
+    - { search: "key: CHANGEME" , replace: 'key: {{key | default("")}}' }
+    - { search: "appName: CHANGEME" , replace: 'appName: {{appName | default("CHANGEME")}}' }
+    - { search: "projectName: CHANGEME" , replace: 'projectName: {{projectName | default("CHANGEME")}}' }
+    - { search: "Name: CHANGEME" , replace: 'Name: {{Name | default("CHANGEME")}}' }
+    - { search: "Name: $HOSTNAME" , replace: 'Name: {{Name | default("$HOSTNAME")}}' }
