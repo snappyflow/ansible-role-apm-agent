@@ -36,6 +36,7 @@
   tags:
     - install
     - upgrade
+    - never
   ignore_errors: true
   when: env_vars is defined or include_paths is defined
 
@@ -46,6 +47,7 @@
         - upgrade
   tags:
     - upgrade
+    - never
 
 - include_tasks:
     file: validate.yml
@@ -64,6 +66,7 @@
         - uninstall
   tags:
     - uninstall
+    - never
 
 - include_tasks:
     file: help.yml
@@ -72,6 +75,7 @@
         - help
   tags:
     - help
+    - never
 
 - include_tasks:
     file: generate-config.yml
@@ -80,6 +84,7 @@
         - generate-config
   tags:
     - generate-config
+    - never
 
 - include_tasks:
     file: update-config.yml
@@ -88,3 +93,4 @@
         - update-config
   tags:
     - update-config
+    - never
