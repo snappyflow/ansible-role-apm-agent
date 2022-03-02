@@ -1,4 +1,10 @@
 ---
+- name: Update the packages in CentOS or RHEL
+  become: true
+  become_user: root
+  yum: update_cache=yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
 - name: Install pre-requisites on CentOS or RHEL(curl,wget and logrotate)
   become: yes
   yum:
@@ -14,12 +20,12 @@
     - sysstat
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: Update and install the packages in Ubuntu
+- name: Update the packages in Ubuntu
   become: true
   become_user: root
   shell: |
     apt-get -y update
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" or ansible_distribution == 'Ubuntu'
 
 - name: Install pre-requsites on Debian or Ubuntu(curl,wget and logrotate)
   become: yes
