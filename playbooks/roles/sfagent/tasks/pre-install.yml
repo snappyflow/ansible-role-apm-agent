@@ -13,7 +13,14 @@
     - lsof
     - sysstat
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
-  
+
+- name: Update and install the packages in Ubuntu
+  become: true
+  become_user: root
+  shell: |
+    apt-get -y update
+  when: ansible_os_family == "Debian"
+
 - name: Install pre-requsites on Debian or Ubuntu(curl,wget and logrotate)
   become: yes
   apt:
