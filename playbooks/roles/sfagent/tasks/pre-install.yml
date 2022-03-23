@@ -28,9 +28,9 @@
     cache_valid_time: 3600
   when: ansible_os_family == "Debian" or ansible_distribution == 'Ubuntu'
 
-- name: Wait for 60 seconds to update linux packages
+- name: Wait for 300 seconds to update linux packages
   wait_for:
-    timeout: 60
+    timeout: 300
     
 - name: Install pre-requsites on Debian or Ubuntu(curl,wget and logrotate)
   become: yes
