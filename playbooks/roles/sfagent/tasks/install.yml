@@ -1,4 +1,19 @@
 ---
+- name: register agent directory
+  stat:
+    path: "{{AGENTDIR}}"
+  register: agentdir
+- name: Backingup config.yaml and customer scripts
+  shell: |
+    cp -f {{AGENTDIR}}/config.yaml _config_backup.yaml
+    [ -f {{AGENTDIR}}/normalization/config.yaml ] && cp {{AGENTDIR}}/normalization/config.yaml _norm_config_backup.yaml
+    [ -f {{AGENTDIR}}/mappings/custom_logging_plugins.yaml ] && cp {{AGENTDIR}}/mappings/custom_logging_plugins.yaml _custom_logging_backup.yaml
+    [ -f {{AGENTDIR}}/scripts/custom_scripts.lua ] && cp {{AGENTDIR}}/scripts/custom_scripts.lua _custom_script_backup.yaml
+  args:
+    chdir: /tmp
+    warn: false
+  when: agentdir.stat.exists
+  
 - name: download fluentbit for systemd
   shell: |
     curl https://api.github.com/repos/snappyflow/apm-agent/releases?per_page=100 \
@@ -105,6 +120,17 @@
   ansible.builtin.debug:
     msg: successfully copied config-generated.yaml to config.yaml
 
+- name: Copying back config.yaml and customer scripts
+  shell: |
+    mv -f _config_backup.yaml {{AGENTDIR}}/config.yaml
+    [ -f _norm_config_backup.yaml ] && yes | mv _norm_config_backup.yaml {{AGENTDIR}}/normalization/config.yaml
+    [ -f _custom_logging_backup.yaml ] && yes | mv _custom_logging_backup.yaml {{AGENTDIR}}/mappings/custom_logging_plugins.yaml
+    [ -f _custom_script_backup.yaml ] && yes | mv _custom_script_backup.yaml {{AGENTDIR}}/scripts/custom_scripts.lua
+  args:
+    chdir: /tmp
+    warn: false
+  when: agentdir.stat.exists
+
 - name: Replace values in config file
   ansible.builtin.replace:
     path: /opt/sfagent/config.yaml
@@ -116,6 +142,7 @@
     - { search: "projectName: CHANGEME" , replace: 'projectName: {{projectName | default("CHANGEME")}}' }
     - { search: "Name: CHANGEME" , replace: 'Name: {{Name | default("CHANGEME")}}' }
     - { search: "Name: $HOSTNAME" , replace: 'Name: {{Name | default("$HOSTNAME")}}' }
+  when: not agentdir.stat.exists
 
 
 - name: create to env.conf
@@ -252,6 +279,3 @@
     msg:
     -  sfagent installed successfully.
 
-
-
-  
