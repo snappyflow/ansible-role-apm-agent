@@ -17,7 +17,7 @@
 - name: download fluentbit for systemd
   shell: |
     curl https://api.github.com/repos/snappyflow/apm-agent/releases?per_page=100 \
-        | grep -w "browser_download_url"|grep fluentbit \
+        | grep -w "browser_download_url"|grep "download/fluentbit" \
         | head -n 1 \
         | cut -d":" -f 2,3 \
         | tr -d '"' \
