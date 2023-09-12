@@ -2,42 +2,43 @@
 - include_vars: ../config-params.yml
   ignore_errors: true
 
-- name: Generate config
+- name: generate config
   shell: ./sfagent -generate-config
   args:
     chdir: /opt/sfagent
-  ignore_errors: true
-  register: generate_config_result
 
-- name: Verify if config-generated.yaml exists
+- name: config-generated.yaml verification
   stat:
     path: /opt/sfagent/config-generated.yaml
-  register: config_stat
+  register: stat_result
 
-- name: Display status of config generation
+- name: status of the config-generated.yaml
   ansible.builtin.debug:
-    msg: "{{ 'Successfully generated config-generated.yaml' if generate_config_result.rc == 0 else 'config-generated.yaml could not be generated' }}"
+    msg: successfully generated config-generated.yaml
+  when: stat_result.stat.exists
 
-- name: Copy generated config to config.yaml
+- name: status of the config-generated.yaml
+  ansible.builtin.debug:
+    msg: config-generated.yaml could not be generated
+  when: not stat_result.stat.exists
+  
+- name: copy generated config to config.yaml
   shell: cp config-generated.yaml config.yaml
   args:
     chdir: /opt/sfagent
-  when: config_stat.stat.exists and generate_config_result.rc == 0
 
-- name: Display status of copying config file
+- name: status of the config-generated.yaml
   ansible.builtin.debug:
-    msg: "Successfully copied config-generated.yaml to config.yaml"
-  when: config_stat.stat.exists and generate_config_result.rc == 0
+    msg: successfully copied config-generated.yaml to config.yaml
 
 - name: Replace values in config file
   ansible.builtin.replace:
     path: /opt/sfagent/config.yaml
-    regexp: '{{ item.search }}'
-    replace: '{{ item.replace | default("") }}'
-  loop:
-    - { search: "key: CHANGEME", replace: 'key: {{ key | default("") }}' }
-    - { search: "appName: CHANGEME", replace: 'appName: {{ appName | default("CHANGEME") }}' }
-    - { search: "projectName: CHANGEME", replace: 'projectName: {{ projectName | default("CHANGEME") }}' }
-    - { search: "Name: CHANGEME", replace: 'Name: {{ Name | default("CHANGEME") }}' }
-    - { search: "Name: $HOSTNAME", replace: 'Name: {{ Name | default("$HOSTNAME") }}' }
-  when: config_stat.stat.exists and generate_config_result.rc == 0
+    regexp: '{{item.search}}'
+    replace: '{{ item.replace }}'
+  with_items:
+    - { search: "key: CHANGEME" , replace: 'key: {{key | default("")}}' }
+    - { search: "appName: CHANGEME" , replace: 'appName: {{appName | default("CHANGEME")}}' }
+    - { search: "projectName: CHANGEME" , replace: 'projectName: {{projectName | default("CHANGEME")}}' }
+    - { search: "Name: CHANGEME" , replace: 'Name: {{Name | default("CHANGEME")}}' }
+    - { search: "Name: $HOSTNAME" , replace: 'Name: {{Name | default("$HOSTNAME")}}' }
