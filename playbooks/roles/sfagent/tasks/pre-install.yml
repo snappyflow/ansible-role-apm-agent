@@ -6,7 +6,7 @@
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Install pre-requisites on CentOS or RHEL(curl,wget and logrotate)
-  become: yes
+  become: true
   yum:
     name: "{{ packages }}"
     state: present
@@ -24,12 +24,12 @@
   become: true
   become_user: root
   apt:
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == "Debian" or ansible_distribution == 'Ubuntu'
     
 - name: Install pre-requsites on Debian or Ubuntu(curl,wget and logrotate)
-  become: yes
+  become: true
   apt:
     pkg:
     - curl

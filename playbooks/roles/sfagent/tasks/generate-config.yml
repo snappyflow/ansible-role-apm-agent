@@ -1,6 +1,6 @@
 ---
 - include_vars: ../config-params.yml
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: generate config
   shell: ./sfagent -generate-config

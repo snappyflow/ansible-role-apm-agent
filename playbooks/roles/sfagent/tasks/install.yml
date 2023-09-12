@@ -89,7 +89,7 @@
     warn: false
 
 - include_vars: ../config-params.yml
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: generate config
   shell: ./sfagent -generate-config
@@ -267,7 +267,7 @@
   ansible.builtin.unarchive:
     src: '{{SFTRACE_AGENT_x86_64}}'
     dest: /opt/sfagent
-    remote_src: yes
+    remote_src: true
 
 - name: Install sftrace java-agent and python-agent started
   shell: mv -f /opt/sfagent/sftrace/sftrace /bin && mv -f /opt/sfagent/sftrace/java/sftrace /opt/sfagent/sftrace 
