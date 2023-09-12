@@ -97,10 +97,12 @@
     chdir: /opt/sfagent
   ignore_errors: true
   register: generate_config_result 
+
 - name: Verify if config-generated.yaml exists
   stat:
     path: /opt/sfagent/config-generated.yaml
-  register: config_sta
+  register: config_stat
+
 - name: Display status of config generation
   ansible.builtin.debug:
     msg: "{{ 'Successfully generated config-generated.yaml' if generate_config_result.rc == 0 else 'config-generated.yaml could not be generated' }}"
