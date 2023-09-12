@@ -1,9 +1,8 @@
----
 - name: Check sfagent service status
-  ansible.builtin.service:
-    name: sfagent
+  ansible.builtin.service_facts:
+    filters: name=sfagent
   register: service_status
 
 - name: Report sfagent service status
   ansible.builtin.debug:
-    msg: "Service sfagent is {{ 'running.' if service_status.status == 'active' else 'not running. Check service sfagent status or systemctl status sfagent.' }}"
+    msg: "Service sfagent is {{ 'running.' if service_status.ansible_facts.services['sfagent'].state == 'active' else 'not running. Check service sfagent status or systemctl status sfagent.' }}"
