@@ -1,15 +1,10 @@
 ---
-- name: sfagent state
-  service:
-    name: sfagent
-  register: service_output
+- name: Check sfagent service status
+  ansible.builtin.command: systemctl is-active --quiet sfagent
+  register: sfagent_status
+  failed_when: sfagent_status.rc != 0
 
-- name: Report status of sfagent not running
-  fail:
-    msg: Service sfagent is not running. check service sfagent status or systemctl status sfagent.
-  when: service_output.status.ActiveState != "active"
+- name: Report sfagent service status
+  ansible.builtin.debug:
+    msg: "Service sfagent is {{ 'running.' if sfagent_status.rc == 0 else 'not running. Check service sfagent status or systemctl status sfagent.' }}"
 
-- name: Report status of sfagent
-  debug:
-    msg: Service sfagent is running.
-  when: service_output.status.ActiveState == "active"
