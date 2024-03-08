@@ -2,6 +2,7 @@
 - name: Update the packages in CentOS or RHEL
   become: true
   become_user: root
+  ignore_errors: yes
   yum: update_cache=yes
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
@@ -23,6 +24,7 @@
 - name: Update the packages in Ubuntu
   become: true
   become_user: root
+  ignore_errors: yes
   apt:
     update_cache: true
     cache_valid_time: 3600

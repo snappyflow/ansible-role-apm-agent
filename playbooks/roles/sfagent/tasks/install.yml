@@ -41,7 +41,7 @@
   when: ansible_service_mgr != 'systemd'
 
 - name: Install fluent-bit 
-  shell: tar -zxvf fluentbit.tar.gz >/dev/null && mv -f fluent-bit /opt/td-agent-bit/bin/td-agent-bit && mv -f GeoLite2-City.mmdb {{TDAGENTCONFDIR}} && mv -f uaparserserver /opt/td-agent-bit/bin/ && mv -f url-normalizer /opt/td-agent-bit/bin/ && mv -f td-agent-bit.conf /etc/td-agent-bit/  && rm fluentbit.tar.gz* && rm td-agent-bit.service
+  shell: tar -zxvf fluentbit.tar.gz >/dev/null && mv -f fluent-bit /opt/td-agent-bit/bin/td-agent-bit && mv -f GeoLite2-City.mmdb {{TDAGENTCONFDIR}} && mv -f uaparserserver /opt/td-agent-bit/bin/ && mv -f url-normalizer /opt/td-agent-bit/bin/ && mv -f ldap-parser /opt/td-agent-bit/bin/ && mv -f  airflow-goals-parser /opt/td-agent-bit/bin/ && mv -f message-formatter /opt/td-agent-bit/bin/ && mv -f td-agent-bit.conf /etc/td-agent-bit/ && rm fluentbit.tar.gz* && rm td-agent-bit.service && chmod 1777 /tmp
   args:
     chdir: /tmp
     warn: false
