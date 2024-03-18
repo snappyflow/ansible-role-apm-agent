@@ -13,7 +13,12 @@
     chdir: /tmp
     warn: false
   when: agentdir.stat.exists
-  
+
+- name: Create fluentbit folder in /tmp
+  ansible.builtin.file:
+    path: /tmp/fluentbit
+    state: directory
+    
 - name: download fluentbit for systemd
   shell: |
     curl https://api.github.com/repos/snappyflow/apm-agent/releases?per_page=100 \
@@ -23,7 +28,7 @@
         | tr -d '"' \
         | xargs wget -q -N && mkdir -p /opt/td-agent-bit/bin && mkdir -p /etc/td-agent-bit/ 
   args:
-    chdir: /tmp
+    chdir: /tmp/fluentbit
     warn: false
   when: ansible_service_mgr == 'systemd'
 
@@ -36,16 +41,21 @@
         | tr -d '"' \
         | xargs wget -q -N && mkdir -p /opt/td-agent-bit/bin && mkdir -p /etc/td-agent-bit/
   args:
-    chdir: /tmp
+    chdir: /tmp/fluentbit
     warn: false
   when: ansible_service_mgr != 'systemd'
 
 - name: Install fluent-bit 
-  shell: tar -zxvf fluentbit.tar.gz >/dev/null && mv -f fluent-bit /opt/td-agent-bit/bin/td-agent-bit && mv -f GeoLite2-City.mmdb {{TDAGENTCONFDIR}} && mv -f uaparserserver /opt/td-agent-bit/bin/ && mv -f url-normalizer /opt/td-agent-bit/bin/ && mv -f td-agent-bit.conf /etc/td-agent-bit/  && rm fluentbit.tar.gz* && rm td-agent-bit.service
+  shell: tar -zxvf fluentbit.tar.gz >/dev/null && mv -f fluent-bit /opt/td-agent-bit/bin/td-agent-bit && mv -f GeoLite2-City.mmdb {{TDAGENTCONFDIR}} && mv -f uaparserserver /opt/td-agent-bit/bin/ && mv -f url-normalizer /opt/td-agent-bit/bin/ && mv -f ldap-parser /opt/td-agent-bit/bin/ && mv -f  airflow-goals-parser /opt/td-agent-bit/bin/ && mv -f message-formatter /opt/td-agent-bit/bin/ && mv -f td-agent-bit.conf /etc/td-agent-bit/ && rm fluentbit.tar.gz* && rm td-agent-bit.service
   args:
-    chdir: /tmp
+    chdir: /tmp/fluentbit
     warn: false
 
+- name: Remove fluentbit folder from /tmp
+  ansible.builtin.file:
+    path: /tmp/fluentbit
+    state: absent
+    
 - name: Configure logrotate
   shell: |
     cat > /etc/logrotate.d/td-agent-bit << EOF
