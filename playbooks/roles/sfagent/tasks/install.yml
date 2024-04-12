@@ -104,7 +104,7 @@
 - name: unzip sfagent
   shell: | 
     if [ "{{ ansible_architecture }}" != "aarch64" ] ; then
-      tar -zxvf /opt/sfagent/sfagent*linux_{{ ansible_architecture }}.tar.gz 
+      tar -zxvf /opt/sfagent/sfagent*linux_{{ ansible_architecture }}.tar.gz >/dev/null 
     elif [ "{{ ansible_architecture }}" == "aarch64" ] ; then
       tar -zxvf sfagent*linux_arm64.tar.gz >/dev/null
     fi
