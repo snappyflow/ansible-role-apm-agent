@@ -16,12 +16,31 @@
   
 - name: download fluentbit for systemd
   shell: |
-    curl https://api.github.com/repos/snappyflow/apm-agent/releases?per_page=100 \
+    if [ {{ansible_architecture}} != "aarch64" ] ; then
+        curl -sL https://api.github.com/repos/snappyflow/apm-agent/releases?per_page=500 \
         | grep -w "browser_download_url"|grep "download/fluentbit" \
         | head -n 1 \
         | cut -d":" -f 2,3 \
         | tr -d '"' \
-        | xargs wget -q -N && mkdir -p /opt/td-agent-bit/bin && mkdir -p /etc/td-agent-bit/ 
+        | xargs wget -q
+    elif [ {{ansible_architecture}} = "aarch64" ]; then
+        VERSION=$(grep '^VERSION_ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
+        if [ $VERSION = "22.04" ] ; then
+            curl -sL https://api.github.com/repos/snappyflow/apm-agent/releases?per_page=500 \
+            | grep -w "browser_download_url"|grep "download/ubuntu22-fluent-bit-arm" \
+            | head -n 1 \
+            | cut -d":" -f 2,3 \
+            | tr -d '"' \
+            | xargs wget -q
+        else
+            curl -sL https://api.github.com/repos/snappyflow/apm-agent/releases?per_page=500 \
+            | grep -w "browser_download_url"|grep "download/fluent-bit-arm" \
+            | head -n 1 \
+            | cut -d":" -f 2,3 \
+            | tr -d '"' \
+            | xargs wget -q
+        fi
+    fi
   args:
     chdir: /tmp
     warn: false
@@ -34,14 +53,14 @@
         | head -n 1 \
         | cut -d":" -f 2,3 \
         | tr -d '"' \
-        | xargs wget -q -N && mkdir -p /opt/td-agent-bit/bin && mkdir -p /etc/td-agent-bit/
+        | xargs wget -q
   args:
     chdir: /tmp
     warn: false
   when: ansible_service_mgr != 'systemd'
 
 - name: Install fluent-bit 
-  shell: tar -zxvf fluentbit.tar.gz >/dev/null && mv -f fluent-bit /opt/td-agent-bit/bin/td-agent-bit && mv -f GeoLite2-City.mmdb {{TDAGENTCONFDIR}} && mv -f uaparserserver /opt/td-agent-bit/bin/ && mv -f url-normalizer /opt/td-agent-bit/bin/ && mv -f td-agent-bit.conf /etc/td-agent-bit/  && rm fluentbit.tar.gz* && rm td-agent-bit.service
+  shell: mkdir -p /opt/td-agent-bit/bin && mkdir -p /etc/td-agent-bit/ && tar -zxvf fluentbit.tar.gz >/dev/null && mv -f fluent-bit /opt/td-agent-bit/bin/td-agent-bit && mv -f GeoLite2-City.mmdb {{TDAGENTCONFDIR}} && mv -f uaparserserver /opt/td-agent-bit/bin/ && mv -f url-normalizer /opt/td-agent-bit/bin/ && mv -f td-agent-bit.conf /etc/td-agent-bit/  && rm fluentbit.tar.gz* && rm td-agent-bit.service
   args:
     chdir: /tmp
     warn: false
@@ -83,10 +102,18 @@
     warn: false
 
 - name: unzip sfagent
-  shell: tar -zxvf /opt/sfagent/sfagent*linux_{{ansible_architecture}}.tar.gz && rm sfagent*linux_* checksum*
+  shell: | 
+    if [ "{{ ansible_architecture }}" != "aarch64" ] ; then
+      tar -zxvf /opt/sfagent/sfagent*linux_{{ ansible_architecture }}.tar.gz >/dev/null 
+    elif [ "{{ ansible_architecture }}" == "aarch64" ] ; then
+      tar -zxvf sfagent*linux_arm64.tar.gz >/dev/null
+    fi
+    rm sfagent*linux_* checksum*
   args:
     chdir: /opt/sfagent/
     warn: false
+    executable: /bin/bash
+  become: true
 
 - include_vars: ../config-params.yml
   ignore_errors: true
@@ -276,4 +303,6 @@
   ansible.builtin.debug:
     msg:
     -  sfagent installed successfully.
+
+
 
